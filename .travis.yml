@@ -10,8 +10,8 @@
 # * PlatformIO integration with Travis CI
 #   < http://docs.platformio.org/page/ci/travis.html >
 #
-# * User Guide for `platformio ci` command
-#   < http://docs.platformio.org/page/userguide/cmd_ci.html >
+# * User Guide for `platformio ci` command <
+# http://docs.platformio.org/page/userguide/cmd_ci.html >
 #
 #
 # Please choice one of the following templates (proposed below) and uncomment
