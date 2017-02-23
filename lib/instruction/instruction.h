@@ -2,6 +2,7 @@
 #define HELLOROBOTICS_INSTRUCTION_H
 
 #include "Adafruit_BluefruitLE_SPI.h"
+#include <SoftwareSerial.h>
 
 #include "utils.h"
 
@@ -189,6 +190,10 @@ private:
   Adafruit_BluefruitLE_SPI ble;
 };
 
+char Bluetooth::buffer[25];
+
+Bluetooth::Bluetooth(int ss, int irq, int rst) : ble(ss, irq, rst) {}
+
 void Bluetooth::init() {
   ble.begin(false);
   ble.setMode(BLUEFRUIT_MODE_DATA);
@@ -199,14 +204,16 @@ bool Bluetooth::available() {
 }
 
 void Bluetooth::send(const Instruction &ins) {
-  ble.print(ins.toBuf());
+  char* buf = ins.toBuf();
+  ble.write(ins.toBuf(), indexOf(buf, Instruction::ETB, 20));
 }
 
 void Bluetooth::read(Instruction &ins) {
-  char* c = buffer;
-  for(size_t i = 0; i < 25 && ble.available()
-      && *c != Instruction::ETB; i++, c++) {
-    *c = ble.read();
+  char c;
+  for(size_t i = 0; (i < 25) && (ble.available())
+      && (c != Instruction::ETB); i++) {
+    c = ble.read();
+    buffer[i] = c;
   }
   ins.fromBuf(buffer);
 }

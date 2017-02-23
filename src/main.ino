@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <SoftwareSerial.h>
 
 #include "instruction.h"
 #include "utils.h"
@@ -7,18 +6,16 @@
 #include "distance.h"
 #include "encoder.h"
 
-Adafruit_BluefruitLE_SPI ble(4, 19, -1);
+Bluetooth ble(4, 14, -1);
 Distance dist(9, 10);
 Motors mot(6, 8, 5, 7);
 Encoder enc;
+Instruction ins;
 
 void setup(void)
 {
-
-  //pinMode(5, OUTPUT);
   Serial.begin(115200);
-  
-  //Serial.begin(115200);
+  ble.init();
   dist.init();
   mot.init();
   enc.init();
@@ -26,8 +23,9 @@ void setup(void)
 }
 
 void loop(void) {
-  int d = dist.getDist();
-  mot.setSpeed(d > 20 ? 200 : -200, 0);
-  delay(100);
-  ble.print(enc.getDiretion());
+  if (ble.available()) {
+    ble.read(ins);
+    Serial.print(ins.getData());
+    ble.send(Instruction(Instruction::MISO_TEXT, "Hi!", 4));
+  }
 }
