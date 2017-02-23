@@ -27,17 +27,17 @@ void Motors::init() {
 
 void Motors::setSpeed(int left, int right) {
   if (left >= 0) {
-    analogWrite(leftA, left);
+    analogWrite(leftA, left*2);
     digitalWrite(leftB, LOW);
   } else {
-    analogWrite(leftA, 255 + left);
+    analogWrite(leftA, 255 + left*2);
     digitalWrite(leftB, HIGH);
   }
   if (right >= 0) {
-    analogWrite(rightA, right);
+    analogWrite(rightA, right*2);
     digitalWrite(rightB, LOW);
   } else {
-    analogWrite(rightA, 255 + right);
+    analogWrite(rightA, 255 + right*2);
     digitalWrite(rightB, HIGH);
   }
 }

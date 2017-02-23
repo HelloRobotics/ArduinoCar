@@ -143,6 +143,7 @@ bool Instruction::fromBuf(const char* buf) {
         clear();
         return false;
     }
+
 }
 
 void Instruction::clear() {
@@ -170,7 +171,7 @@ char* Instruction::getData() const {
 }
 
 char Instruction::getData(size_t index) const {
-    return data[index + 1];
+    return data[index];
 }
 
 char Instruction::getCode() const {
@@ -205,7 +206,7 @@ bool Bluetooth::available() {
 
 void Bluetooth::send(const Instruction &ins) {
   char* buf = ins.toBuf();
-  ble.write(ins.toBuf(), indexOf(buf, Instruction::ETB, 20));
+  ble.write(ins.toBuf(), indexOf(buf, Instruction::ETB, 20) + 1);
 }
 
 void Bluetooth::read(Instruction &ins) {

@@ -25,7 +25,8 @@ void setup(void)
 void loop(void) {
   if (ble.available()) {
     ble.read(ins);
-    Serial.print(ins.getData());
+    Serial.print((int)ins.getData(0));
+    mot.setSpeed(ins.getData(0), ins.getData(1));
     ble.send(Instruction(Instruction::MISO_TEXT, "Hi!", 4));
   }
 }
