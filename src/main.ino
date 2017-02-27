@@ -28,7 +28,6 @@ void setup(void)
 
 void loop(void) {
   while (ble.available()) {
-    printDbg();
     ble.read(receive);
     mot.setSpeed(receive.getData(0), receive.getData(1));
   }

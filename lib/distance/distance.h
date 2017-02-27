@@ -22,7 +22,7 @@ unsigned char Distance::getDist() {
   digitalWrite(trig, HIGH);
   delay(1);
   digitalWrite(trig, LOW);
-  int in = pulseIn(echo, HIGH)/44;
+  int in = pulseIn(echo, HIGH, 10000)/44;
   if (in > 255)
     return 255;
   else
