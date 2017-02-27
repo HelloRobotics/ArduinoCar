@@ -55,10 +55,13 @@ void Encoder::setLeftListener(void (*leftListener)()) {
 }
 
 unsigned char Encoder::getDiretion() {
+  char buf[20];
+  sprintf(buf, "L: %d, R: %d\n", countLeft, countRight);
+  Serial.println(buf);
   float f = (countRight - countLeft) * 1.515;
   int angle = f > 0 ? f + 0.5 : f - 0.5;
   if (angle < 0) {
-    return (-angle) % 255 + 255;
+    return angle % 255 + 255;
   } else {
     return angle % 255;
   }

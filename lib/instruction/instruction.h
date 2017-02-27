@@ -21,9 +21,9 @@ public:
     const static char ETB = 0x17;
 
     Instruction();
-    Instruction(char code, char data);
-    Instruction(char code, char dataA, char dataB);
-    Instruction(char code, const char data[], size_t size);
+    Instruction(const char code, const char data);
+    Instruction(const char code, const char dataA, const char dataB);
+    Instruction(const char code, const char data[], size_t size);
 
     char* toBuf() const;
     bool fromBuf(const char* buf);
@@ -74,21 +74,21 @@ size_t Instruction::codeSize(const char code, bool mosi) {
 
 Instruction::Instruction() : code(INST_ERROR) {};
 
-Instruction::Instruction(char code, char data) :
+Instruction::Instruction(const char code, const char data) :
         mosi(false), code(code), data{data} {
     if (codeSize(code, false) != 1) {
         clear();
     }
 }
 
-Instruction::Instruction(char code, char dataA, char dataB) :
+Instruction::Instruction(const char code, const char dataA, const char dataB) :
         mosi(false), code(code), data{dataA, dataB} {
     if (codeSize(code, false) != 2) {
         clear();
     }
 }
 
-Instruction::Instruction(char code, const char data[], size_t size) :
+Instruction::Instruction(const char code, const char data[], size_t size) :
         mosi(false), code(code) {
     if (size > LENGTH || codeSize(code, false) != LENGTH_DYNAMIC)
         clear();
@@ -206,15 +206,30 @@ bool Bluetooth::available() {
 
 void Bluetooth::send(const Instruction &ins) {
   char* buf = ins.toBuf();
-  ble.write(ins.toBuf(), indexOf(buf, Instruction::ETB, 20) + 1);
+  size_t len = Instruction::codeSize(buf[0], false);
+  ble.write(buf, len == Instruction::LENGTH_DYNAMIC ? indexOf(buf, Instruction::ETB, 20) + 1 : len + 2);
 }
 
 void Bluetooth::read(Instruction &ins) {
   char c;
-  for(size_t i = 0; (i < 25) && (ble.available())
-      && (c != Instruction::ETB); i++) {
-    c = ble.read();
-    buffer[i] = c;
+  c = ble.read();
+  size_t size = Instruction::codeSize(c, true);
+  buffer[0] = c;
+  if (size == Instruction::LENGTH_UNDEFINED) {
+    ins.clear();
+    return;
+  } else if (size == Instruction::LENGTH_DYNAMIC) {
+    for(size_t i = 1; (i < 25) && (ble.available())
+        && (c != Instruction::ETB); i++) {
+      c = ble.read();
+      buffer[i] = c;
+    }
+  } else {
+    for(size_t i = 1; (i < 25) && (ble.available())
+        && (i <= size + 1); i++) {
+      c = ble.read();
+      buffer[i] = c;
+    }
   }
   ins.fromBuf(buffer);
 }
