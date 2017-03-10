@@ -32,13 +32,9 @@ void loop(void) {
     mot.setSpeed(receive.getData(0), receive.getData(1));
   }
   int di = mot.getDiretion();
-  Serial.print("Direc: ");
-  Serial.println(di);
   ble.send(Instruction(Instruction::MISO_DIRECTION, di));
   delay(5);
   int d = dist.getDist();
   ble.send(Instruction(Instruction::MISO_DIST, d));
-  Serial.print("Dist: ");
-  Serial.println(d);
   delay(50);
 }

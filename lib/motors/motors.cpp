@@ -57,6 +57,10 @@ void Encoder::setLeftListener(void (*leftListener)()) {
 unsigned char Encoder::getDiretion() {
   char buf[20];
   sprintf(buf, "L: %d, R: %d\n", countLeft, countRight);
+  Serial.print("L: ");
+  Serial.print(forwardLeft ? "true" : "false");
+  Serial.print(" R: ");
+  Serial.println(forwardRight ? "true" : "false");
   Serial.println(buf);
   float f = (countRight - countLeft) * 1.515;
   int angle = f > 0 ? f + 0.5 : f - 0.5;
@@ -93,8 +97,14 @@ void Motors::setSpeed(int left, int right) {
     analogWrite(rightA, 255 + right*2);
     digitalWrite(rightB, HIGH);
   }
-  enc.forwardLeft = left >= 0;
-  enc.forwardRight = right >= 0;
+  if (left > 0)
+    enc.forwardLeft = true;
+  else if (left < 0)
+    enc.forwardLeft = false;
+  if (right > 0)
+    enc.forwardRight = true;
+  else if (right < 0)
+    enc.forwardRight = false;
 }
 
 void Motors::setRightListener(void (*listener)()) {

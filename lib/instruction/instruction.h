@@ -185,15 +185,17 @@ public:
   bool available();
   void send(const Instruction &ins);
   void read(Instruction &ins);
+  void setDebug(bool d);
 
 private:
   static char buffer[25];
   Adafruit_BluefruitLE_SPI ble;
+  bool debug;
 };
 
 char Bluetooth::buffer[25];
 
-Bluetooth::Bluetooth(int ss, int irq, int rst) : ble(ss, irq, rst) {}
+Bluetooth::Bluetooth(int ss, int irq, int rst) : ble(ss, irq, rst), debug(false) {}
 
 void Bluetooth::init() {
   ble.begin(false);
@@ -212,7 +214,12 @@ void Bluetooth::send(const Instruction &ins) {
 
 void Bluetooth::read(Instruction &ins) {
   char c;
-  c = ble.read();
+  if (ble.available()) {
+    c = ble.read();
+  } else {
+    ins.clear();
+    return;
+  }
   size_t size = Instruction::codeSize(c, true);
   buffer[0] = c;
   if (size == Instruction::LENGTH_UNDEFINED) {
@@ -231,7 +238,13 @@ void Bluetooth::read(Instruction &ins) {
       buffer[i] = c;
     }
   }
+  if (debug)
+    printByteArray(buffer, 5);
   ins.fromBuf(buffer);
+}
+
+void Bluetooth::setDebug(bool d) {
+  debug = d;
 }
 
 #endif

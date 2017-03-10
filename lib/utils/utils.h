@@ -35,10 +35,12 @@ size_t indexOf(const char* data, char toFind, size_t len) {
 void printByteArray(const char* data, int len) {
   for(int i = 0; i < len; i++) {
     Serial.print("0x");
-    if (data[i] <= 0x0F)
+    if ((unsigned char)data[i] <= (unsigned char) 0x0F)
       Serial.print("0");
-    Serial.println((unsigned int)data[i], HEX);
+    Serial.print((unsigned char)data[i], HEX);
+    Serial.print(' ');
   }
+  Serial.print('\n');
 }
 
 #endif
